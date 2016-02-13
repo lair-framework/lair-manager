@@ -1,49 +1,69 @@
 package main
 
 import (
+	_ "crypto/sha512"
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
-	"strings"
+	"os/exec"
+
+	"github.com/lair-framework/lair-manager/helpers"
 )
 
 func main() {
 
-	chkDirs := map[string]bool{
-		"/deps":          false,
-		"/deps/caddy":    false,
-		"/deps/meteor":   false,
-		"/deps/node":     false,
-		"/deps/mongodb":  false,
-		"/deps/lair-api": false,
-		"/deps/lair-app": false,
-		"/db":            false,
-		"/db/mongo":      false,
-	}
-
-	// Get list of current directory recursively
 	root, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
-		// Make directory path relative by stripping absolute
-		relDir := strings.Replace(path, root, "", -1)
-		// If the found directory is needed for lair, mark its existence
-		if _, ok := chkDirs[relDir]; ok {
-			chkDirs[relDir] = true
-		}
-		return nil
-	})
-
-	for path, exist := range chkDirs {
-		fmt.Printf("Path: %s\nExists: %v\n", path, exist)
+	err = helpers.CheckDirLayout(root)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	// Download missing dependencies
+	// Download them all
+	err = helpers.DownloadFile("node")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = helpers.DownloadFile("mongodb")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = helpers.DownloadFile("api-server")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = helpers.DownloadFile("caddy")
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = helpers.DownloadFile("lair-app")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(helpers.GetMissing())
+	// Extract them all
+	os.MkdirAll("./deps/mongodb", 0777)
+	cmd := "tar"
+	args := []string{"-zxvf", "mongodb-linux-x86_64-ubuntu1404-3.0.6.tgz", "-C", "./deps/mongodb", "--strip-components=1"}
+	if err := exec.Command(cmd, args...).Run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 
+	fmt.Println("Extraction complete")
+	// Delete tar files
+
+	// Start up app
+
+	// Download missing dependencies
+	/*
+		for path, exist := range chkDirs {
+			fmt.Printf("")
+		}
+	*/
 	// Untar dependencies
 
 	// Remove tar files
