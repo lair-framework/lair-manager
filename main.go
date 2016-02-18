@@ -22,38 +22,86 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Download them all
-	err = helpers.DownloadFile("node")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = helpers.DownloadFile("mongodb")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = helpers.DownloadFile("api-server")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = helpers.DownloadFile("caddy")
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = helpers.DownloadFile("lair-app")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(helpers.GetMissing())
-	// Extract them all
-	os.MkdirAll("./deps/mongodb", 0777)
-	cmd := "tar"
-	args := []string{"-zxvf", "mongodb-linux-x86_64-ubuntu1404-3.0.6.tgz", "-C", "./deps/mongodb", "--strip-components=1"}
-	if err := exec.Command(cmd, args...).Run(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	// Download missing packages
+
+	//Download and extract caddy
+	if helpers.IsMissing("/deps/caddy") == false {
+		err = helpers.DownloadFile("caddy")
+		if err != nil {
+			log.Fatal(err)
+		}
+		os.MkdirAll("./deps/caddy", 0777)
+		cmd := "tar"
+		args := []string{"-zxf", "caddy_linux_amd64.tar.gz", "-C", "./deps/caddy"}
+		if err := exec.Command(cmd, args...).Run(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
 
-	fmt.Println("Extraction complete")
+	// Download and extract MongoDB
+	if helpers.IsMissing("/deps/mongodb") == false {
+		err = helpers.DownloadFile("mongodb")
+		if err != nil {
+			log.Fatal(err)
+		}
+		os.MkdirAll("./deps/mongodb", 0777)
+		cmd := "tar"
+		args := []string{"-zxf", "mongodb-linux-x86_64-ubuntu1404-3.0.6.tgz", "-C", "./deps/mongodb", "--strip-components=1"}
+		if err := exec.Command(cmd, args...).Run(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+
+	// Download and extract node
+	if helpers.IsMissing("/deps/node") == false {
+		err = helpers.DownloadFile("node")
+		if err != nil {
+			log.Fatal(err)
+		}
+		os.MkdirAll("./deps/node", 0777)
+		cmd := "tar"
+		args := []string{"-Jxf", "node-v4.2.6-linux-x64.tar.xz", "-C", "./deps/node", "--strip-components=1"}
+		if err := exec.Command(cmd, args...).Run(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+
+	// Download and extract the lair api-server
+	if helpers.IsMissing("/deps/lair-api") == false {
+		err = helpers.DownloadFile("lair-api")
+		if err != nil {
+			log.Fatal(err)
+		}
+		os.MkdirAll("./deps/lair-api", 0777)
+		cmd := "mv"
+		args := []string{"api-server_linux_amd64", "./deps/lair-api/"}
+		if err := exec.Command(cmd, args...).Run(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+
+	// Download and extract the lair-app
+	if helpers.IsMissing("/deps/lair-app") == false {
+		err = helpers.DownloadFile("lair-app")
+		if err != nil {
+			log.Fatal(err)
+		}
+		os.MkdirAll("./deps/lair-app", 0777)
+		cmd := "tar"
+		args := []string{"-zxf", "lair-v2.0.4-linux-amd64.tar.gz", "-C", "./deps/lair-app"}
+		if err := exec.Command(cmd, args...).Run(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+
+	/*
+
+	*/
 	// Delete tar files
 
 	// Start up app

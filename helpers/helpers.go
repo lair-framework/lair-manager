@@ -24,12 +24,12 @@ type dependencies []depInfo
 
 //the meteor tarball, node, mongodb, api-server, caddy, and the lair app itself
 var downloadLocNix64 = map[string]string{
-	"meteor":     "",
-	"node":       "https://nodejs.org/dist/v4.2.6/node-v4.2.6-linux-x64.tar.xz",
-	"mongodb":    "https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.0.6.tgz",
-	"api-server": "https://github.com/lair-framework/api-server/releases/download/v1.1.0/api-server_linux_amd64",
-	"caddy":      "https://github.com/mholt/caddy/releases/download/v0.8.1/caddy_linux_amd64.tar.gz",
-	"lair-app":   "https://github.com/lair-framework/lair/releases/download/v2.0.4/lair-v2.0.4-linux-amd64.tar.gz",
+	"meteor":   "",
+	"node":     "https://nodejs.org/dist/v4.2.6/node-v4.2.6-linux-x64.tar.xz",
+	"mongodb":  "https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.0.6.tgz",
+	"lair-api": "https://github.com/lair-framework/api-server/releases/download/v1.1.0/api-server_linux_amd64",
+	"caddy":    "https://github.com/mholt/caddy/releases/download/v0.8.1/caddy_linux_amd64.tar.gz",
+	"lair-app": "https://github.com/lair-framework/lair/releases/download/v2.0.4/lair-v2.0.4-linux-amd64.tar.gz",
 }
 
 var chkDirs = map[string]bool{
@@ -44,6 +44,9 @@ var chkDirs = map[string]bool{
 	"/db/mongo":      false,
 }
 
+// CheckDirLayout sets the values in chkDir to true if the director Exists.
+// if the directory exists, it is assumed that the dependency is installed
+// and will not download or install the respective dependency
 func CheckDirLayout(root string) error {
 
 	filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
@@ -68,6 +71,8 @@ func CheckDirLayout(root string) error {
 	return nil
 }
 
+// GetMissing returns a list of the missing dependencies that need to be downloaded
+// and installed.
 func GetMissing() (keys []string) {
 	for i, j := range chkDirs {
 		if j == false {
@@ -77,13 +82,19 @@ func GetMissing() (keys []string) {
 	return keys
 }
 
+// IsMissing returns true or false if the depdency already exists and is
+// installed.
+func IsMissing(dependency string) (exists bool) {
+	return chkDirs[dependency]
+}
+
 // DownloadFile retrieves the file at the URL and saves to current directory
 func DownloadFile(dep string) (err error) {
 
 	// Get the filename to create from the trailing path info in url
 	segments := strings.Split(downloadLocNix64[dep], "/")
 	filepath := segments[len(segments)-1]
-	fmt.Println(downloadLocNix64[dep])
+	//fmt.Println(downloadLocNix64[dep])
 
 	// Create the file
 	out, err := os.Create(filepath)
