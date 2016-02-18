@@ -128,15 +128,6 @@ func main() {
 }
 
 /*
-Lair start in directory, detect if these things exist, if they dont, download
-the meteor tarball, node, mongodb, api-server, caddy, and the lair app itself
-
-Lair app will be on github or something in tarball
-
-Lair api-server will be on github or something in tarball
-
-Mongodb https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.0.6.tgz
-
 
 Ask for info, set env variables, launch it
 Default config and be configurable itself
