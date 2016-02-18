@@ -37,6 +37,10 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		if err := os.Remove("caddy_linux_amd64.tar.gz"); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
 
 	// Download and extract MongoDB
@@ -52,6 +56,10 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		if err := os.Remove("mongodb-linux-x86_64-ubuntu1404-3.0.6.tgz"); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
 
 	// Download and extract node
@@ -64,6 +72,10 @@ func main() {
 		cmd := "tar"
 		args := []string{"-Jxf", "node-v4.2.6-linux-x64.tar.xz", "-C", "./deps/node", "--strip-components=1"}
 		if err := exec.Command(cmd, args...).Run(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		if err := os.Remove("node-v4.2.6-linux-x64.tar.xz"); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
@@ -97,24 +109,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		if err := os.Remove("lair-v2.0.4-linux-amd64.tar.gz"); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
-
-	/*
-
-	*/
-	// Delete tar files
 
 	// Start up app
 
-	// Download missing dependencies
 	/*
 		for path, exist := range chkDirs {
 			fmt.Printf("")
 		}
 	*/
-	// Untar dependencies
-
-	// Remove tar files
 
 	// Start up the app
 
