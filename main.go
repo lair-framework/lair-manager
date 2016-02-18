@@ -117,12 +117,6 @@ func main() {
 
 	// Start up app
 
-	/*
-		for path, exist := range chkDirs {
-			fmt.Printf("")
-		}
-	*/
-
 	// Start up the app
 
 }
